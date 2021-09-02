@@ -3,6 +3,8 @@
  */
 package DHypergraphGenerator;
 
+import java.util.ArrayList;
+
 import org.ejml.simple.SimpleMatrix;
 
 public class App {
@@ -13,7 +15,10 @@ public class App {
     public static void main(String[] args) {
         System.out.println(new App().getGreeting());
 
-        SimpleMatrix test = new SimpleMatrix(2,2);
-        test.print();
+        HypergraphGenerator generator = new HypergraphGenerator();
+        ArrayList<SimpleMatrix> test = generator.generate(2, 3, 3);
+
+        test.get(0).print();
+        test.get(1).print();
     }
 }
