@@ -1,13 +1,14 @@
 package DHypergraphGenerator;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import org.ejml.simple.SimpleMatrix;
 
 public class HypergraphGenerator {
 
     // (Approximate) Proportion of arcs that should have two heads and two tails respectively
-    // NOTE: number of hyperarcs = TWO_HEAD_PROP + TWO_TAIL_PROP
+    // NOTE: proportion of hyperarcs = TWO_HEAD_PROP + TWO_TAIL_PROP
     // TODO: Make these parameters in the generate() method
     final static double TWO_HEAD_PROP = 1/3;
     final static double TWO_TAIL_PROP = 1/3;
@@ -46,6 +47,10 @@ public class HypergraphGenerator {
      */
     private SimpleMatrix createMatrix(int numRows, int numCols) {
 
+        // Call generateColumn num Cols times and add them to a float[]
+
+        // Check that new Column is different from the rest, if not generate a new one
+
         SimpleMatrix endMatrix = new SimpleMatrix(numRows, numCols);
         return endMatrix;
 
@@ -57,12 +62,13 @@ public class HypergraphGenerator {
      * @return the column/arc as a float[numElements]
      */
     private float[] generateColumn(int numElements) {
-        float[] column = new float[numElements];
+
+        float[] column;
 
         // Decide which type of arc/hyperarc to create
         double columnTypeSeed = Math.random();
         if(columnTypeSeed < TWO_HEAD_PROP) {
-            // Generate a two headed hyperarc
+            column = generateTwoHeadedArc(numElements);
         } else if (columnTypeSeed < TWO_HEAD_PROP + TWO_TAIL_PROP) {
             // Generate a two tailed hyperarc
         } else {
@@ -72,4 +78,26 @@ public class HypergraphGenerator {
         return column;
     }
     
+    private float[] generateTwoHeadedArc(int numElements) {
+
+
+        // Randomly sample the 3 indexes for the tails/heads of the arc
+        // Might not be the most efficient to be doing this every time we want
+        // a new arc, so might change later.
+        ArrayList<Integer> sampleNums = new ArrayList<>();
+
+        for(int i = 0; i < numElements; i++) {
+            sampleNums.add(i);
+        }
+
+        Collections.shuffle(sampleNums);
+
+        float[] arc = new float[numElements];
+
+        arc[sampleNums.get(0)] = -1;
+        arc[sampleNums.get(1)] = -1;
+        arc[sampleNums.get(2)] = 1;
+
+        return arc;
+    }
 }
