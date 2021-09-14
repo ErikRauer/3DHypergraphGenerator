@@ -72,7 +72,7 @@ public class HypergraphGenerator {
         } else if (columnTypeSeed < TWO_HEAD_PROP + TWO_TAIL_PROP) {
             column = generateTwoTailedArc(numElements);
         } else {
-            // Generate a regular arc
+            column = generateRegularArc(numElements);
         }
 
         return column;
@@ -120,6 +120,28 @@ public class HypergraphGenerator {
         arc[sampleNums.get(0)] = -1;
         arc[sampleNums.get(1)] = -1;
         arc[sampleNums.get(2)] = 1;
+
+        return arc;
+    }
+
+    private float[] generateRegularArc(int numElements) {
+
+
+        // Randomly sample the 3 indexes for the tails/heads of the arc
+        // Might not be the most efficient to be doing this every time we want
+        // a new arc, so might change later.
+        ArrayList<Integer> sampleNums = new ArrayList<>();
+
+        for(int i = 0; i < numElements; i++) {
+            sampleNums.add(i);
+        }
+
+        Collections.shuffle(sampleNums);
+
+        float[] arc = new float[numElements];
+
+        arc[sampleNums.get(0)] = -1;
+        arc[sampleNums.get(1)] = -1;
 
         return arc;
     }
