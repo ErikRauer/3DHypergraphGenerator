@@ -10,8 +10,8 @@ public class HypergraphGenerator {
     // (Approximate) Proportion of arcs that should have two heads and two tails respectively
     // NOTE: proportion of hyperarcs = TWO_HEAD_PROP + TWO_TAIL_PROP
     // TODO: Make these parameters in the generate() method
-    final static double TWO_HEAD_PROP = 1/3;
-    final static double TWO_TAIL_PROP = 1/3;
+    final static double TWO_HEAD_PROP = 0.333333;
+    final static double TWO_TAIL_PROP = 0.333333;
 
     /**
      * Class for the generation of hypergraph vertex-hyperarc incidence matrix
@@ -48,10 +48,16 @@ public class HypergraphGenerator {
     private SimpleMatrix createMatrix(int numRows, int numCols) {
 
         // Call generateColumn num Cols times and add them to a float[]
+        float[][] matrix = new float[numCols][numRows];
+
+        for(int i = 0; i < numCols; i++) {
+            matrix[i] = generateColumn(numRows);
+        }
 
         // Check that new Column is different from the rest, if not generate a new one
 
-        SimpleMatrix endMatrix = new SimpleMatrix(numRows, numCols);
+        SimpleMatrix endMatrix = new SimpleMatrix(matrix);
+        endMatrix = endMatrix.transpose();
         return endMatrix;
 
     }
@@ -78,6 +84,11 @@ public class HypergraphGenerator {
         return column;
     }
     
+    /**
+     * Generates a column/arc with two heads and one tail for the hyperarc-incidence matrix
+     * @param numElements the number of elements the column should have = number of vertices in the hypergraph
+     * @return the column/arc as a float[numElements]
+     */
     private float[] generateTwoHeadedArc(int numElements) {
 
 
@@ -101,6 +112,11 @@ public class HypergraphGenerator {
         return arc;
     }
 
+    /**
+     * Generates a column/arc with two tails and one head for the hyperarc-incidence matrix
+     * @param numElements the number of elements the column should have = number of vertices in the hypergraph
+     * @return the column/arc as a float[numElements]
+     */
     private float[] generateTwoTailedArc(int numElements) {
 
 
@@ -124,6 +140,11 @@ public class HypergraphGenerator {
         return arc;
     }
 
+    /**
+     * Generates a column/arc with one head and one tail for the hyperarc-incidence matrix
+     * @param numElements the number of elements the column should have = number of vertices in the hypergraph
+     * @return the column/arc as a float[numElements]
+     */
     private float[] generateRegularArc(int numElements) {
 
 
@@ -140,7 +161,7 @@ public class HypergraphGenerator {
 
         float[] arc = new float[numElements];
 
-        arc[sampleNums.get(0)] = -1;
+        arc[sampleNums.get(0)] = 1;
         arc[sampleNums.get(1)] = -1;
 
         return arc;
