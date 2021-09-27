@@ -41,6 +41,14 @@ public class DirectionalHypergraph {
     }
 
     /**
+     * Get the vertex-arc incidence matrix for this hypergraph
+     * @return the matrix as a SimpleMatrix
+     */
+    public SimpleMatrix getVertexArcIncidenceMatrix() {
+        return vertexArcIncidenceMatrix;
+    }
+
+    /**
      * Set the number of hyperarcs for counting purposes
      * @param numHyperArcs number of hyperarcs
      */
