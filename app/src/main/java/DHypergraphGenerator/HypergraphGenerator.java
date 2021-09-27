@@ -28,28 +28,28 @@ public class HypergraphGenerator {
       * @param numVertices number of vertices the graphs should have = number of rows in the matrices, must be >= 3
       * @param numArcs number of arcs the graphs should have = number of columns in the matrices, must be >= 1
       */
-    public ArrayList<SimpleMatrix> generate(int numGraphs, int numVertices, int numArcs) {
+    public ArrayList<DirectionalHypergraph> generate(int numGraphs, int numVertices, int numArcs) {
 
-        ArrayList<SimpleMatrix> matrixList = new ArrayList<SimpleMatrix>();
+        ArrayList<DirectionalHypergraph> graphList = new ArrayList<DirectionalHypergraph>();
 
         // Check that there are at least 3 vertices, otherwise can't generate hyperarcs
         if(numVertices < 3) {
             System.out.println("Too few vertices");
-            return matrixList;
+            return graphList;
         } else if (numArcs < 1) {
             System.out.println("Too few arcs");
-            return matrixList;
+            return graphList;
         }
 
         // Create numGraphs matrices and add them to matrixList
         for(int i = 0; i < numGraphs; i++) {
 
-            SimpleMatrix currentMatrix = createMatrix(numVertices, numArcs);
+            DirectionalHypergraph currentGraph = createHypergraph(numVertices, numArcs);
 
-            matrixList.add(currentMatrix);
+            graphList.add(currentGraph);
         }
 
-        return(matrixList);
+        return(graphList);
     }
 
     /**
@@ -58,7 +58,7 @@ public class HypergraphGenerator {
      * @param numCols number of columns = number of arcs
      * @return the hyperarc-incidence matrix as a SimpleMatrix 
      */
-    private SimpleMatrix createMatrix(int numRows, int numCols) {
+    private DirectionalHypergraph createHypergraph(int numRows, int numCols) {
 
         // Call generateColumn num Cols times and add them to a float[]
         float[][] matrix = new float[numCols][numRows];
@@ -98,9 +98,8 @@ public class HypergraphGenerator {
         }
 
 
-        SimpleMatrix endMatrix = new SimpleMatrix(matrix);
-        endMatrix = endMatrix.transpose();
-        return endMatrix;
+        DirectionalHypergraph endGraph = new DirectionalHypergraph(matrix);
+        return endGraph;
 
     }
 

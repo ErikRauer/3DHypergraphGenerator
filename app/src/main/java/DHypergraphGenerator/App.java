@@ -6,19 +6,36 @@ package DHypergraphGenerator;
 import java.util.ArrayList;
 
 import org.ejml.simple.SimpleMatrix;
+import org.ejml.ops.MatrixIO;
 
 public class App {
-    public String getGreeting() {
-        return "Hello World!";
-    }
 
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+        // System.out.println(new App().getGreeting());
 
         HypergraphGenerator generator = new HypergraphGenerator();
-        ArrayList<SimpleMatrix> test = generator.generate(2, 3, 3);
+        ArrayList<DirectionalHypergraph> test = generator.generate(2, 3, 9);
 
-        test.get(0).print();
-        test.get(1).print();
+        test.get(0).getVertexArcIncidenceMatrix().print();
+        test.get(1).getVertexArcIncidenceMatrix().print();
+
+        SimpleMatrix empty = new SimpleMatrix(5, 1);
+        // empty.print();
+        // test.get(0).solve(empty).print();
+
+        // MatrixIO.show(test.get(0), "Test Matrix");
+
+        // int i = 1;
+        // float[][] fakeMatrix = new float[2][3];
+        // for(float[] row : fakeMatrix) {
+        //     for(float col : row) {
+        //         col = i;
+        //         i++;
+        //     }
+        // }
+
+        // SimpleMatrix testMatrix = new SimpleMatrix(fakeMatrix);
+        // testMatrix.print();
+
     }
 }
