@@ -21,12 +21,18 @@ public class HypergraphGenerator {
      /**
       * Method that generates the Matrices
       * @param numGraphs number of graphs to create, number of matrices to return
-      * @param numVertices number of vertices the graphs should have = number of rows in the matrices
+      * @param numVertices number of vertices the graphs should have = number of rows in the matrices, must be >= 3
       * @param numArcs number of arcs the graphs should have = number of columns in the matrices
       */
     public ArrayList<SimpleMatrix> generate(int numGraphs, int numVertices, int numArcs) {
 
         ArrayList<SimpleMatrix> matrixList = new ArrayList<SimpleMatrix>();
+
+        // Check that there are at least 3 vertices, otherwise can't generate hyperarcs
+        if(numVertices < 3) {
+            System.out.println("Too few vertices");
+            return matrixList;
+        }
 
         // Create numGraphs matrices and add them to matrixList
         for(int i = 0; i < numGraphs; i++) {
