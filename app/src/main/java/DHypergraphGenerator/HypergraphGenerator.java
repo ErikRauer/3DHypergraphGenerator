@@ -1,6 +1,7 @@
 package DHypergraphGenerator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 import org.ejml.simple.SimpleMatrix;
@@ -10,8 +11,11 @@ public class HypergraphGenerator {
     // (Approximate) Proportion of arcs that should have two heads and two tails respectively
     // NOTE: proportion of hyperarcs = TWO_HEAD_PROP + TWO_TAIL_PROP
     // TODO: Make these parameters in the generate() method
-    final static double TWO_HEAD_PROP = 0.333333;
-    final static double TWO_TAIL_PROP = 0.333333;
+    final static double TWO_HEAD_PROP = 0.4;
+    final static double TWO_TAIL_PROP = 0.4;
+
+    // Maximum number of times the generator will attempt to create a nonduplicate column before giving up
+    final static int MAX_RETRIES = 5;
 
     /**
      * Class for the generation of hypergraph vertex-hyperarc incidence matrix
@@ -33,7 +37,7 @@ public class HypergraphGenerator {
             System.out.println("Too few vertices");
             return matrixList;
         } else if (numArcs < 1) {
-            System.out.prinln("Too few arcs");
+            System.out.println("Too few arcs");
             return matrixList;
         }
 
@@ -59,11 +63,40 @@ public class HypergraphGenerator {
         // Call generateColumn num Cols times and add them to a float[]
         float[][] matrix = new float[numCols][numRows];
 
+        int currentNumColumns = 0;
+        
         for(int i = 0; i < numCols; i++) {
-            matrix[i] = generateColumn(numRows);
+
+            // Counter to check the number of times this column has been generated
+            int currentNumTries = 0;
+            float[] newColumn = new float[numRows];
+
+            // Only try to generate a unique column MAX_RETRIES times
+            retryLoop:
+            while(currentNumTries < MAX_RETRIES) {
+
+                // Generate a new potential column
+                newColumn = generateColumn(numRows);
+
+                // Check for duplicate, if it is not a duplicate, we're done
+                if(!duplicateColumn(matrix, newColumn, numCols, currentNumColumns)) {
+                    break retryLoop;
+                }
+
+                // Reset newColumn
+                for(int j = 0; j < numRows; j++) {
+                    newColumn[j] = 0;
+                }
+
+                currentNumTries++;
+            }
+
+            matrix[i] = newColumn;
+
+            currentNumColumns++;
+
         }
 
-        // Check that new Column is different from the rest, if not generate a new one
 
         SimpleMatrix endMatrix = new SimpleMatrix(matrix);
         endMatrix = endMatrix.transpose();
@@ -174,5 +207,19 @@ public class HypergraphGenerator {
         arc[sampleNums.get(1)] = -1;
 
         return arc;
+    }
+
+    private boolean duplicateColumn(float[][] matrix, float[] column, int numCols, int numOtherCols) {
+
+        // For each other already existing column...
+        for(int i = 0; i < numOtherCols; i++) {
+
+            // If the column is the same as the new one, return true
+            if(Arrays.compare(matrix[i], column) == 0) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
