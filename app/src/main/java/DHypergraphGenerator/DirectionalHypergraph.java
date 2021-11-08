@@ -38,6 +38,30 @@ public class DirectionalHypergraph {
         this.numVertices = vertexArcIncidenceMatrix.length;
         this.numArcs = vertexArcIncidenceMatrix[0].length;
 
+        countHyperArcs(vertexArcIncidenceMatrix);
+    }
+
+    /**
+     * Count the number of hyperarcs in a given vertex-arc incidence matrix
+     * @param matrix the vertex-arc incidence matrix as a 2D array
+     */
+    private void countHyperArcs(float[][] matrix) {
+
+        // For each column..
+        for(int i = 0; i < this.numVertices; i++) {
+
+            int sumOfCol = 0;
+
+            // Add the total of it's values
+            for(int j = 0; j < this.numArcs; j++) {
+                sumOfCol += matrix[i][j];
+            }
+
+            // If the sum is not 0, it's a hyperarc
+            if(sumOfCol != 0) {
+                this.numHyperArcs++;
+            }
+        }
     }
 
     /**
