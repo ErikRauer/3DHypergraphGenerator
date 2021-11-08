@@ -1,6 +1,7 @@
 package DHypergraphGenerator;
 
 import org.ejml.simple.SimpleMatrix;
+import org.ejml.data.SingularMatrixException;
 
 /**
  * Object that represents a VertexArcIncidenceMatrix
@@ -13,6 +14,8 @@ public class DirectionalHypergraph {
     int numVertices, numArcs;
 
     int numHyperArcs;
+
+    boolean isLinearlyIndependent;
 
     /**
      * Create a new DirectionalHypergraph with all empty values
@@ -39,6 +42,7 @@ public class DirectionalHypergraph {
         this.numArcs = vertexArcIncidenceMatrix[0].length;
 
         countHyperArcs(vertexArcIncidenceMatrix);
+        testIndependence();
     }
 
     /**
@@ -60,6 +64,28 @@ public class DirectionalHypergraph {
             // If the sum is not 0, it's a hyperarc
             if(sumOfCol != 0) {
                 this.numHyperArcs++;
+            }
+        }
+    }
+
+    public void testIndependence() {
+        // The matrix is definitely not linearly independent if it's not square
+        if(this.numArcs != this.numVertices) {
+            this.isLinearlyIndependent = false;
+
+        } else {
+            try {
+                // Create empty vector to test for linear independence
+                SimpleMatrix empty = new SimpleMatrix(this.numArcs, 1);
+
+                // Try to solve the equation Ax=0
+                // If this doesn't throw an exception, the matrix is linearly independent
+                this.vertexArcIncidenceMatrix.solve(empty);
+
+                this.isLinearlyIndependent = true;
+            } catch (SingularMatrixException e) {
+                // If an exception was thrown, the matrix is linearly dependent
+                this.isLinearlyIndependent = false;
             }
         }
     }
@@ -102,6 +128,14 @@ public class DirectionalHypergraph {
      */
     public int getNumArcs() {
         return numArcs;
+    }
+
+    /**
+     * Get whether or not the Vertex-Hyperarc Matrix for this Hypergraph is linearly independent
+     * @return true if the matrix is linearly independent
+     */
+    public boolean isLinearlyIndependent() {
+        return isLinearlyIndependent;
     }
 
 }
