@@ -106,14 +106,14 @@ public class DirectionalHypergraph {
     }
 
     public void testIndependence() {
-        // The matrix is definitely not linearly independent if it's not square
-        if(this.numArcs != this.numVertices) {
+        // The matrix is definitely not linearly independent if there's more cols than rows not square
+        if(this.numArcs > this.numVertices) {
             this.isLinearlyIndependent = false;
 
         } else {
             try {
                 // Create empty vector to test for linear independence
-                SimpleMatrix empty = new SimpleMatrix(this.numArcs, 1);
+                SimpleMatrix empty = new SimpleMatrix(this.numVertices, 1);
 
                 // Try to solve the equation Ax=0
                 // If this doesn't throw an exception, the matrix is linearly independent
