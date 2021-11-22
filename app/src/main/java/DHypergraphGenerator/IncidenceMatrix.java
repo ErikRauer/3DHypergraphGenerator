@@ -86,24 +86,32 @@ public class IncidenceMatrix {
     }
 
 
-    public void testIndependence() {
+    private boolean testIndependence(float[][] matrix) {
+
+        int colsNum = matrix.length;
+        int rowsNum = matrix[0].length;
+
         // The matrix is definitely not linearly independent if there's more cols than rows not square
-        if(this.numCols > this.numRows) {
-            this.isLinearlyIndependent = false;
+        if(colsNum > rowsNum) {
+            return false;
 
         } else {
             try {
                 // Create empty vector to test for linear independence
-                SimpleMatrix empty = new SimpleMatrix(this.numRows, 1);
+                SimpleMatrix empty = new SimpleMatrix(rowsNum, 1);
+
+                // Convert to SimpleMatrix
+                SimpleMatrix inSimpleMatrixForm = new SimpleMatrix(matrix);
+                inSimpleMatrixForm = inSimpleMatrixForm.transpose();
 
                 // Try to solve the equation Ax=0
                 // If this doesn't throw an exception, the matrix is linearly independent
-                this.asSimpleMatrix.solve(empty);
+                inSimpleMatrixForm.solve(empty);
 
-                this.isLinearlyIndependent = true;
+                return true;
             } catch (SingularMatrixException e) {
                 // If an exception was thrown, the matrix is linearly dependent
-                this.isLinearlyIndependent = false;
+                return false;
             }
         }
     }
@@ -131,6 +139,7 @@ public class IncidenceMatrix {
      * @return true if the matrix is linearly independent
      */
     public boolean isLinearlyIndependent() {
+        this.isLinearlyIndependent = testIndependence(this.asArray);
         return isLinearlyIndependent;
     }
 }
