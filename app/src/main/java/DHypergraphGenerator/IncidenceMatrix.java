@@ -14,6 +14,8 @@ public class IncidenceMatrix {
     int numRows;
     int numCols;
 
+    int rank;
+
     boolean isLinearlyIndependent;
     
     public IncidenceMatrix(int numVertices, int numArcs) {
@@ -45,7 +47,9 @@ public class IncidenceMatrix {
         this.numCols = cleanedMatrix.length;
         this.numRows = cleanedMatrix[0].length;
 
-        testIndependence();
+        this.isLinearlyIndependent = testIndependence(cleanedMatrix);
+
+        calculateRank();
     }
 
     
@@ -117,6 +121,9 @@ public class IncidenceMatrix {
     }
 
 
+    private void calculateRank() {
+        this.rank = this.asSimpleMatrix.svd().rank();
+    }
 
     public int getNumRows() {
         return this.numRows;
@@ -132,6 +139,11 @@ public class IncidenceMatrix {
 
     public SimpleMatrix getAsSimpleMatrix() {
         return this.asSimpleMatrix;
+    }
+
+    public int getRank() {
+        calculateRank();
+        return this.rank;
     }
     
     /**
