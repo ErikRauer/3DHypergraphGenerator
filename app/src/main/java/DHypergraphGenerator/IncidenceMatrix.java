@@ -1,6 +1,7 @@
 package DHypergraphGenerator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.ejml.simple.SimpleMatrix;
 
@@ -17,6 +18,8 @@ public class IncidenceMatrix {
     int rank;
 
     boolean isLinearlyIndependent;
+
+    ArrayList<int[]> basesList;
     
     public IncidenceMatrix(int numVertices, int numArcs) {
         this.asSimpleMatrix = new SimpleMatrix(numVertices, numArcs);
@@ -50,6 +53,7 @@ public class IncidenceMatrix {
         this.isLinearlyIndependent = testIndependence(cleanedMatrix);
 
         calculateRank();
+        generateBases();
     }
 
     
@@ -121,6 +125,77 @@ public class IncidenceMatrix {
     }
 
 
+    private void generateBases() {
+        
+        // Store the bases
+        ArrayList<int[]> bases = new ArrayList<>();
+
+        // For each column:
+        for (int i = 0; i < this.numCols; i++) {
+
+            // List of linearly independent columns
+            int[] acceptedColumns = new int[this.rank];
+            int numAcceptedCols = 1;
+            int nextColNum = (i + 1) % this.numCols;
+            acceptedColumns[0] = i;
+
+            // Keep adding another column to matrix and testing for linear independence
+            while (numAcceptedCols < this.rank && nextColNum != i) {
+
+                // Create a matrix of appropriate size
+                float[][] currentMatrix = new float[numAcceptedCols + 1][this.numRows];
+
+                // Fill in the columns we have so far
+                for (int j = 0; j < numAcceptedCols; j++) {
+
+                    int toAdd = acceptedColumns[j];
+                    currentMatrix[j] = this.asArray[toAdd];
+
+                }
+
+                // Add the next column
+                currentMatrix[numAcceptedCols] = this.asArray[nextColNum];
+
+                // Test matrix for linear independence
+                boolean isCurrentLinInd = testIndependence(currentMatrix);
+
+                // System.out.println(i + " " + nextColNum + " " + isCurrentLinInd);
+
+                // Add the column to our list of accepted columns if it's linearly inddpendent
+                if (isCurrentLinInd) {
+                    acceptedColumns[numAcceptedCols] = nextColNum;
+                    numAcceptedCols++;
+                }
+
+                nextColNum = (nextColNum + 1) % this.numCols;
+            }
+
+            // acceptedColumns should be a basis for the column space of this matrix
+
+            // Sort the columns
+            Arrays.sort(acceptedColumns);
+            boolean newBasis = true;
+
+            // Compare to existing bases and reject if they're the same
+            for (int[] basis : bases) {
+                if (Arrays.compare(acceptedColumns, basis) == 0) {
+                    newBasis = false;
+                    // System.out.println("Not a new basis");
+                    break;
+                }
+            }
+
+            // Add the basis if it is new
+            if(newBasis) {
+                bases.add(acceptedColumns);
+                // System.out.println("Adding new basis");
+            }
+        }
+
+        this.basesList = bases;
+    }
+
+
     private void calculateRank() {
         this.rank = this.asSimpleMatrix.svd().rank();
     }
@@ -153,5 +228,25 @@ public class IncidenceMatrix {
     public boolean isLinearlyIndependent() {
         this.isLinearlyIndependent = testIndependence(this.asArray);
         return isLinearlyIndependent;
+    }
+
+    public ArrayList<int[]> getBasesList() {
+        generateBases();
+        return this.basesList;
+    }
+
+    public void printBases() {
+        generateBases();
+
+        System.out.println("Column numbers that form bases are: ");
+
+        for (int[] basis : this.basesList) {
+            String toPrint = "";
+
+            for(int i = 0; i < this.rank; i++) {
+                toPrint += basis[i] + ", ";
+            }
+            System.out.println(toPrint);
+        }
     }
 }
